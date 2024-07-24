@@ -1,0 +1,338 @@
+DVAR $pressure
+DVAR $spd1
+DVAR $spc1
+DVAR $length ;pressure
+DVAR $hFile
+DVAR $cCheck
+DVAR $press
+DVAR $length
+DVAR $lame   
+DVAR $COM 
+DVAR $height
+DVAR $deltaZ
+DVAR $deltaZ12
+DVAR $deltaZbig
+
+VELOCITY OFF
+
+Incremental ; sets relative mode
+Primary ; sets primary units mm and s
+
+G65 F1000; accel speed mm/s^2
+G66 F1000;accel speed mm/s^2
+
+$deltaZ = 0.015
+$deltaZ12 = 0.013
+$deltaZbig = 0.078
+$COM = 5;   serial port for pressure box
+$pressure = 70; psi
+
+G71; metric units;
+G76; time base seconds;
+G91; relative/incremental mode;
+G68; 
+
+ENABLE X Y Z; enables all the axis
+
+REPEAT 4 ;the full cycle of printing initial meander plus electrode...we'll make 4 electrodes, so repeat 4 here
+
+REPEAT 7 ;first meander but not the electrode itself
+G1 X2 F0.5
+G1 Y0.1 F0.5
+G1 X-2 F0.5
+G1 Y0.1 F0.5
+ENDRPT
+
+G1 X2 F0.5; LEADING. absolute X 2
+
+
+
+;START 1ST LAYER
+Repeat 2; second (long) meander. check for uniformity in extruded filament. This also creates the edge of the 1st layer of the actual electrode
+G1 X12 F0.5
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+ENDRPT; moved 120 microns in y
+
+G1 X12 F0.5; abs X 14
+
+Repeat 14; X scanning 7.96-14.0
+G1 Y0.1 F0.5
+G1 X-6.04 F0.5
+G1 Y0.1 F0.5
+G1 X6.04 F0.5
+ENDRPT; moved 2.92 microns in y
+
+Repeat 2; X scanning 7.96-14.0
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+G1 X12 F0.5
+ENDRPT; moved 3.04 microns in y
+;END OF 1ST LAYER. In top right
+G1 Z$deltaZ12 F0.5
+
+
+
+;START 2ND LAYER
+Repeat 2; 
+G1 Y-3.04 F0.5
+G1 X-0.03 F0.5
+G1 Y3.04 F0.5
+G1 X-0.03 F0.5
+ENDRPT; -120 microns in x
+
+Repeat 29
+G1 Y-3.04 F0.5
+G1 X-0.1 F0.5
+G1 Y3.04 F0.5 
+G1 X-0.1 F0.5 
+ENDRPT; -5.92 mm in x
+
+G1 Y-3.04 F0.5
+
+Repeat 2
+G1 X-0.03 F0.5
+G1 Y3.04 F0.5
+G1 X-0.03 F0.5
+G1 Y-3.04 F0.5
+ENDRPT; now in bottom left of main frame
+
+Repeat 25
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y-0.12 F0.5
+ENDRPT; now bottom left of bottom tail so I need to get to top tail.
+; to do this, I'll follow the edge of the bottom tail and left edge of the frame up to the base of the top tail
+
+G1 X-0.02 F0.5
+G1 Y0.1392 F05
+G4 P0.5; half second delay to extrude enough material to really stick to the adjacent grid
+G1 X5.96 F0.5
+G1 Y2.9008 F0.5; now 20 microns to the left of frame top left; make the first step in -x 20 microns smaller than the rest
+
+G1 X-0.0992 F0.5
+G1 Y-0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5; the first of 25 cycles with a slight diminution in first step in negative x
+
+Repeat 24; steps 2-25 of 25 cycles
+G1 X-0.1192 F0.5
+G1 Y-0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5
+ENDRPT; now in top left of top tail
+
+;END OF 2ND LAYER
+G1 Z$deltaZ F0.5
+
+
+
+;START 3RD LAYER
+G1 Y-3.04 F0.5;reset to bottom left of left tail
+
+Repeat 2; second (long) meander. check for uniformity in extruded filament. This also creates the edge of the 1st layer of the actual electrode
+G1 X12 F0.5
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+ENDRPT; moved 120 microns in y
+
+G1 X12 F0.5; abs X 14
+
+Repeat 14; X scanning 7.96-14.0
+G1 Y0.1 F0.5
+G1 X-6.04 F0.5
+G1 Y0.1 F0.5
+G1 X6.04 F0.5
+ENDRPT; moved 2.92 microns in y
+
+Repeat 2; X scanning 7.96-14.0
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+G1 X12 F0.5
+ENDRPT; moved 3.04 microns in y
+;END OF 3RD LAYER. now in top right
+G1 Z$deltaZ F0.5
+
+
+
+;START 4TH LAYER
+Repeat 2; 
+G1 Y-3.04 F0.5
+G1 X-0.03 F0.5
+G1 Y3.04 F0.5
+G1 X-0.03 F0.5
+ENDRPT; -120 microns in x
+
+Repeat 29
+G1 Y-3.04 F0.5
+G1 X-0.1 F0.5
+G1 Y3.04 F0.5 
+G1 X-0.1 F0.5 
+ENDRPT; -5.92 mm in x
+
+G1 Y-3.04 F0.5
+
+Repeat 2
+G1 X-0.03 F0.5
+G1 Y3.04 F0.5
+G1 X-0.03 F0.5
+G1 Y-3.04 F0.5
+ENDRPT; now in bottom left of main frame
+
+Repeat 25
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y-0.12 F0.5
+ENDRPT; now bottom left of bottom tail so I need to get to top tail.
+; to do this, I'll follow the edge of the bottom tail and left edge of the frame up to the base of the top tail
+
+G1 X-0.02 F0.5
+G1 Y0.1392 F05
+G4 P0.5; half second delay to extrude enough material to really stick to the adjacent grid
+G1 X5.96 F0.5
+G1 Y2.9008 F0.5; now 20 microns to the left of frame top left; make the first step in -x 20 microns smaller than the rest
+
+G1 X-0.0992 F0.5
+G1 Y-0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5; the first of 25 cycles with a slight diminution in first step in negative x
+
+Repeat 24; steps 2-25 of 25 cycles
+G1 X-0.1192 F0.5
+G1 Y-0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5
+ENDRPT; now in top left of top tail
+;END OF 4TH LAYER. Now in bottom left
+G1 Z$deltaZ F0.5
+
+
+
+;Start 5TH LAYER
+G1 Y-3.04 F0.5;reset to bottom left of left tail
+
+Repeat 2; second (long) meander. check for uniformity in extruded filament. This also creates the edge of the 1st layer of the actual electrode
+G1 X12 F0.5
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+ENDRPT; moved 120 microns in y
+
+G1 X12 F0.5; abs X 14
+
+Repeat 14; X scanning 7.96-14.0
+G1 Y0.1 F0.5
+G1 X-6.04 F0.5
+G1 Y0.1 F0.5
+G1 X6.04 F0.5
+ENDRPT; moved 2.92 microns in y
+
+Repeat 2; X scanning 7.96-14.0
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+G1 X12 F0.5
+ENDRPT; moved 3.04 microns in y
+;END OF 5TH LAYER. Now in top right
+G1 Z$deltaZ F0.5
+
+
+
+;Start 6th layer
+Repeat 2; 
+G1 Y-3.04 F0.5
+G1 X-0.03 F0.5
+G1 Y3.04 F0.5
+G1 X-0.03 F0.5
+ENDRPT; -120 microns in x
+
+Repeat 29
+G1 Y-3.04 F0.5
+G1 X-0.1 F0.5
+G1 Y3.04 F0.5 
+G1 X-0.1 F0.5 
+ENDRPT; -5.92 mm in x
+
+G1 Y-3.04 F0.5
+
+Repeat 2
+G1 X-0.03 F0.5
+G1 Y3.04 F0.5
+G1 X-0.03 F0.5
+G1 Y-3.04 F0.5
+ENDRPT; now in bottom left of main frame
+
+Repeat 25
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y-0.12 F0.5
+ENDRPT; now bottom left of bottom tail so I need to get to top tail.
+; to do this, I'll follow the edge of the bottom tail and left edge of the frame up to the base of the top tail
+
+G1 X-0.02 F0.5
+G1 Y0.1392 F05
+G4 P0.5; half second delay to extrude enough material to really stick to the adjacent grid
+G1 X5.96 F0.5
+G1 Y2.9008 F0.5; now 20 microns to the left of frame top left; make the first step in -x 20 microns smaller than the rest
+
+G1 X-0.0992 F0.5
+G1 Y-0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5; the first of 25 cycles with a slight diminution in first step in negative x
+
+Repeat 24; steps 2-25 of 25 cycles
+G1 X-0.1192 F0.5
+G1 Y-0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5
+ENDRPT; now in top left of top tail
+;END OF 6TH LAYER. Now in bottom left
+G1 Z$deltaZ F0.5
+
+
+
+;Start 7th layer
+G1 Y-3.04 F0.5;reset to bottom left of left tail
+
+Repeat 2; second (long) meander. check for uniformity in extruded filament. This also creates the edge of the 1st layer of the actual electrode
+G1 X12 F0.5
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+ENDRPT; moved 120 microns in y
+
+G1 X12 F0.5; abs X 14
+
+Repeat 14; X scanning 7.96-14.0
+G1 Y0.1 F0.5
+G1 X-6.04 F0.5
+G1 Y0.1 F0.5
+G1 X6.04 F0.5
+ENDRPT; moved 2.92 microns in y
+
+Repeat 2; X scanning 7.96-14.0
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+G1 X12 F0.5
+ENDRPT; moved 3.04 microns in y and now in top right
+;END OF 7TH LAYER
+
+
+
+G1 X 1 F0.5
+G1 Z-$deltaZbig F0.5; return to layer 1 height
+G1 Y1 F0.5; position for next iteration
+G1 X-15
+G1 Y1.0 F0.5
+ENDRPT; start the next electrode OR end
+;toggle pressure here but need to figure out the command
+M2
+ 

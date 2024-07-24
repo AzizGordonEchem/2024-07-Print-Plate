@@ -1,0 +1,505 @@
+DVAR $hFile
+DVAR $cCheck
+DVAR $press
+DVAR $length
+DVAR $lame
+DVAR $comport
+DVAR $vacpress
+DVAR $pressure
+
+DVAR $feedrate
+DVAR $comchannel
+DVAR $travelrate
+
+DVAR $spd1
+DVAR $spc1  
+DVAR $COM 
+DVAR $height
+DVAR $deltaZ
+DVAR $deltaZ12
+DVAR $deltaZbig
+DVAR $comchannel
+DVAR $vacpress
+
+DVAR $printspeed
+DVAR $printheight
+DVAR $printspeed2
+DVAR $printheight2
+
+DVAR $spanspeed
+
+; Set up important print variables
+$feedrate = 1
+$pressure = 75; psi
+$deltaZ = 0.015
+$deltaZ12 = 0.02
+$deltaZbig = 0.12
+$comchannel = 5;   serial port for pressure box
+
+$printheight = 0.1; mm
+$printspeed = 8; mm/s
+
+$printheight2 = 0.5; mm
+$printspeed2 = 8; mm/s
+
+$spanspeed = 8; mm/s
+
+Primary ; sets primary units mm and s
+G65 F2000; accel speed mm/s^2
+G66 F2000; deccel speed mm/s^2
+G71; metric units;
+G76; time base seconds;
+G91; relative/incremental mode;
+G68; 
+
+
+ENABLE X Y Z; enables all the axis
+
+; Write your g-code here
+; Call setPress P$comchannel Q$pressure (com port 5, pressure 35 PSI)
+; Call togglePress P$comchannel (com port 5)
+; 2" by 3" glass slide substrate
+
+
+Call setPress P$comchannel Q$pressure
+Call togglePress P$comchannel
+
+REPEAT 7 ;first meander but not the electrode itself
+G1 X2 F0.5
+G1 Y0.1 F0.5
+G1 X-2 F0.5
+G1 Y0.1 F0.5
+ENDRPT
+
+G1 X-0.5 F0.5; LEADING. absolute X 2
+
+;START 1ST LAYER
+Repeat 14
+G1 Y-3.04 F0.5
+G1 X-0.2 F0.5
+G1 Y3.04 F0.5
+G1 X-0.2 F0.5
+ENDRPT
+
+G1 Y-3.04 F0.5
+G1 X-0.2 F0.5
+G1 Y3.04 F0.5 
+
+Repeat 4
+G1 X-0.03 F0.5
+G1 Y-3.04 F0.5
+G1 X-0.03 F0.5
+G1 Y3.04 F0.5
+ENDRPT
+
+Repeat 25
+G1 X-0.1192 F0.5
+G1 Y-0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5
+ENDRPT
+
+G1 X-0.02 F0.5
+G4 P0.5
+G1 Y-3.06 F0.5
+G4 P0.5
+G1 X5.98 F0.5
+G1 Y0.02 F0.5
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y-0.12 F0.5
+
+Repeat 24
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y-0.12 F0.5
+ENDRPT
+G1 Z$deltaZ12 F0.5
+
+;START 2ND LAYER
+Repeat 2
+G1 X12 F0.5
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+ENDRPT
+
+G1 X12 F0.5
+
+Repeat 10
+G4 P0.1
+G1 Y0.03 F0.5
+G4 P0.1
+G1 X-6.04 F0.5
+G1 Y0.25 F0.5
+G1 X6.04 F0.5
+ENDRPT
+
+Repeat 2
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+G1 X12 F0.5
+ENDRPT
+
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y-3.07 F0.5
+G1 Z$deltaZ12 F0.5
+
+;START 3RD LAYER
+Repeat 2
+G1 X12 F0.5
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+ENDRPT
+
+G1 X12 F0.5
+
+Repeat 10
+G4 P0.1
+G1 Y0.03 F0.5
+G4 P0.1
+G1 X-6.04 F0.5
+G1 Y0.25 F0.5
+G1 X6.04 F0.5
+ENDRPT
+
+Repeat 2
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+G1 X12 F0.5
+ENDRPT
+G4 P0.1
+G1 Z$deltaZ12 F0.5
+
+;START 4TH LAYER
+G4 P0.1
+G1 X-0.1 F0.5
+Repeat 14
+G1 Y-3.04 F0.5
+G1 X-0.2 F0.5
+G1 Y3.04 F0.5
+G1 X-0.2 F0.5
+ENDRPT
+
+G1 Y-3.04 F0.5
+G1 X-0.1 F0.5
+G1 Y3.04 F0.5 
+
+Repeat 4
+G1 X-0.03 F0.5
+G1 Y-3.04 F0.5
+G1 X-0.03 F0.5
+G1 Y3.04 F0.5
+ENDRPT
+
+Repeat 25
+G1 X-0.1192 F0.5
+G1 Y-0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5
+ENDRPT
+
+G1 X-0.02 F0.5
+G4 P0.5
+G1 Y-3.06 F0.5
+G4 P0.5
+G1 X5.98 F0.5
+G1 Y0.02 F0.5
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y-0.12 F0.5
+
+Repeat 24
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y-0.12 F0.5
+ENDRPT
+G1 Z$deltaZ12 F0.5
+
+;START 5TH LAYER
+Repeat 2
+G1 X12 F0.5
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+ENDRPT
+
+G1 X12 F0.5
+
+Repeat 10
+G4 P0.1
+G1 Y0.03 F0.5
+G4 P0.1
+G1 X-6.04 F0.5
+G1 Y0.25 F0.5
+G1 X6.04 F0.5
+ENDRPT
+
+Repeat 2
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+G1 X12 F0.5
+ENDRPT
+
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y-3.07 F0.5
+G1 Z$deltaZ12 F0.5
+
+;START 6TH LAYER
+Repeat 2
+G1 X12 F0.5
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+ENDRPT
+
+G1 X12 F0.5
+
+Repeat 10
+G4 P0.1
+G1 Y0.03 F0.5
+G4 P0.1
+G1 X-6.04 F0.5
+G1 Y0.25 F0.5
+G1 X6.04 F0.5
+ENDRPT
+
+Repeat 2
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+G1 X12 F0.5
+ENDRPT
+G4 P0.1
+G1 Z$deltaZ12 F0.5
+
+;START 7TH LAYER
+G4 P0.1
+Repeat 14
+G1 Y-3.04 F0.5
+G1 X-0.2 F0.5
+G1 Y3.04 F0.5
+G1 X-0.2 F0.5
+ENDRPT
+
+G1 Y-3.04 F0.5
+G1 X-0.2 F0.5
+G1 Y3.04 F0.5 
+
+Repeat 4
+G1 X-0.03 F0.5
+G1 Y-3.04 F0.5
+G1 X-0.03 F0.5
+G1 Y3.04 F0.5
+ENDRPT
+
+Repeat 25
+G1 X-0.1192 F0.5
+G1 Y-0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5
+ENDRPT
+
+G1 X-0.02 F0.5
+G4 P0.5
+G1 Y-3.06 F0.5
+G4 P0.5
+G1 X5.98 F0.5
+G1 Y0.02 F0.5
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y-0.12 F0.5
+
+Repeat 24
+G1 X-0.1192 F0.5
+G1 Y0.12 F0.5
+G1 X-0.1192 F0.5
+G1 Y-0.12 F0.5
+ENDRPT
+G1 Z$deltaZ12 F0.5
+
+Call togglePress P$comchannel
+
+;#################################### Code ##########################################
+
+M2
+
+;##########Functions############;
+DFS setPress        
+         
+        $strtask1 = DBLTOSTR( $P, 0 )            
+        $strtask1 = "COM" + $strtask1
+        $hFile = FILEOPEN $strtask1, 2
+        COMMINIT $hFile, "baud=115200 parity=N data=8 stop=1"
+        COMMSETTIMEOUT $hFile, -1, -1, 1000
+                             
+        $press = $Q * 10.0                             
+        $strtask2 = DBLTOSTR( $press , 0 )  
+      
+      
+        $length = STRLEN( $strtask2 )      
+        WHILE $length < 4.0
+                $strtask2 = "0" + $strtask2    
+                $length = STRLEN( $strtask2 ) 
+        ENDWHILE
+
+
+        $strtask2 = "08PS  " + $strtask2
+                                    
+        $cCheck = 0.00     
+        $lame = STRTOASCII ($strtask2, 0)
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 1) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 2) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 3) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 4)
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 5) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 6) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 7) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 8) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 9)  
+        $cCheck = $cCheck - $lame
+                        
+        WHILE( $cCheck) < 0
+                $cCheck = $cCheck + 256
+        ENDWHILE                        
+
+
+        $strtask3 = makestring "{#H}" $cCheck   
+        $strtask3 = STRUPR( $strtask3 )
+        $strtask2 = "\x02" + $strtask2 + $strtask3 + "\x03"
+            
+        FILEWRITE $hFile "\x05"
+        FILEWRITE $hFile $strtask2
+        FILEWRITE $hFile "\x04"
+
+
+        FILECLOSE $hFile
+
+
+ENDDFS
+
+DFS setVac      
+         
+        $strtask1 = DBLTOSTR( $P, 0 )            
+        $strtask1 = "COM" + $strtask1
+        $hFile = FILEOPEN $strtask1, 2
+        COMMINIT $hFile, "baud=115200 parity=N data=8 stop=1"
+        COMMSETTIMEOUT $hFile, -1, -1, 1000
+                             
+        $vacpress = $Q * 10.0                             
+        $strtask2 = DBLTOSTR( $vacpress , 0 )  
+      
+      
+        $length = STRLEN( $strtask2 )      
+        WHILE $length < 4.0
+                $strtask2 = "0" + $strtask2    
+                $length = STRLEN( $strtask2 ) 
+        ENDWHILE
+
+
+        $strtask2 = "08VS  " + $strtask2
+                                    
+        $cCheck = 0.00     
+        $lame = STRTOASCII ($strtask2, 0)
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 1) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 2) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 3) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 4)
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 5) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 6) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 7) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 8) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 9)  
+        $cCheck = $cCheck - $lame
+                        
+        WHILE( $cCheck) < 0
+                $cCheck = $cCheck + 256
+        ENDWHILE                        
+
+
+        $strtask3 = makestring "{#H}" $cCheck   
+        $strtask3 = STRUPR( $strtask3 )
+        $strtask2 = "\x02" + $strtask2 + $strtask3 + "\x03"
+            
+        FILEWRITE $hFile "\x05"
+        FILEWRITE $hFile $strtask2
+        FILEWRITE $hFile "\x04"
+
+
+        FILECLOSE $hFile
+
+
+ENDDFS
+
+DFS togglePress        
+         
+        $strtask1 = DBLTOSTR( $P, 0 )            
+        $strtask1 = "COM" + $strtask1
+        $hFile = FILEOPEN $strtask1, 2
+        COMMINIT $hFile, "baud=115200 parity=N data=8 stop=1"
+        COMMSETTIMEOUT $hFile, -1, -1, 1000
+
+
+        $strtask2 = "04DI  "
+                                    
+        $cCheck = 0.00     
+        $lame = STRTOASCII ($strtask2, 0)
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 1) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 2) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 3) 
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 4)
+        $cCheck = $cCheck - $lame
+        $lame = STRTOASCII( $strtask2, 5) 
+        $cCheck = $cCheck - $lame
+                        
+        WHILE( $cCheck) < 0
+                $cCheck = $cCheck + 256
+        ENDWHILE                        
+
+
+        $strtask3 = makestring "{#H}" $cCheck   
+        $strtask3 = STRUPR( $strtask3 )
+        $strtask2 = "\x02" + $strtask2 + $strtask3 + "\x03"
+                  
+        FILEWRITE $hFile "\x05"
+        FILEWRITE $hFile $strtask2
+        FILEWRITE $hFile "\x04"
+
+
+        FILECLOSE $hFile
+        G4 P0.15
+
+ENDDFS

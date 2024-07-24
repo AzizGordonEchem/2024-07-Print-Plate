@@ -1,0 +1,268 @@
+DVAR $pressure
+DVAR $spd1
+DVAR $spc1
+DVAR $length ;pressure
+DVAR $hFile
+DVAR $cCheck
+DVAR $press
+DVAR $length
+DVAR $lame   
+DVAR $COM 
+DVAR $height
+DVAR $deltaZ
+DVAR $deltaZ12
+DVAR $deltaZbig
+
+VELOCITY OFF
+
+Incremental ; sets relative mode
+Primary ; sets primary units mm and s
+
+G65 F1000; accel speed mm/s^2
+G66 F1000;accel speed mm/s^2
+
+$deltaZ = 0.018
+$deltaZ12 = 0.016
+$deltaZbig = 0.07
+$COM = 5;   serial port for pressure box
+$pressure = 75; psi
+
+G71; metric units;
+G76; time base seconds;
+G91; relative/incremental mode;
+G68; 
+
+ENABLE X Y Z; enables all the axis
+
+REPEAT 4 ;the full cycle of printing initial meander plus electrode...we'll make 4 electrodes, so repeat 4 here
+
+REPEAT 7 ;first meander but not the electrode itself
+G1 X2 F0.5
+G1 Y0.1 F0.5
+G1 X-2 F0.5
+G1 Y0.1 F0.5
+ENDRPT
+
+G1 X2 F0.5; LEADING. absolute X 2
+
+
+
+;START 1ST LAYER
+Repeat 2; second (long) meander. check for uniformity in extruded filament. This also creates the edge of the 1st layer of the actual electrode
+G1 X12 F0.5
+G1 Y0.03 F0.5
+G1 X-12 F0.5
+G1 Y0.03 F0.5
+ENDRPT; moved 120 microns in y
+
+G1 X12 F0.5; abs X 14
+
+Repeat 2; X scan electrode core
+G1 Y0.7 F0.5
+G1 X-6.04 F0.5
+G1 Y0.7 F0.5
+G1 X6.04 F0.5
+ENDRPT; moved 2.92 microns in y
+
+Repeat 2; X scanning 7.96-14.0
+G1 Y0.03 F0.5
+G1 X-6.04 F0.5
+G1 Y0.03 F0.5
+G1 X6.04 F0.5
+ENDRPT; moved 3.04 microns in y
+;END OF 1ST LAYER. In top right
+G1 Z$deltaZ12 F0.5
+
+
+
+;START 2ND LAYER
+Repeat 2; 
+G1 Y-3.04 F0.5
+G1 X-0.03 F0.5
+G1 Y3.04 F0.5
+G1 X-0.03 F0.5
+ENDRPT; -120 microns in x
+
+G1 Y-3.04 F0.5
+G1 X-0.1 F0.5; -220 microns in x
+
+Repeat 4
+G1 Y3.04 F0.5 
+G1 X-0.7 F0.5
+G1 Y-3.04 F0.5
+G1 X-0.7 F0.5
+ENDRPT; -5.82 mm in x
+
+G1 Y3.04 F0.5
+G1 X-0.1 F0.5
+G1 Y-3.04 F0.5; -5.92 mm in x
+
+Repeat 2
+G1 X-0.03 F0.5
+G1 Y3.04 F0.5
+G1 X-0.03 F0.5
+G1 Y-3.04 F0.5
+ENDRPT; -6.04 mm in x
+;END OF 2ND LAYER. now in bottom left
+G1 Z$deltaZ F0.5
+
+
+
+;START 3RD LAYER
+Repeat 2; X scanning, start from top right and move left
+G1 X6.04 F0.5
+G1 Y0.03 F0.5
+G1 X-6.04 F0.5
+G1 Y0.03 F0.5
+ENDRPT; 120 microns in y
+
+Repeat 2; -0.7 mm step size in y, so -1.4/cycle = 2.8 mm
+G1 X6.04 F0.5
+G1 Y0.7 F0.5
+G1 X-6.04 F0.5
+G1 Y0.7 F0.5
+ENDRPT; 2.92 microns in y
+
+Repeat 2; X scanning, start from top right and move left
+G1 X6.04 F0.5
+G1 Y0.03 F0.5
+G1 X-6.04 F0.5
+G1 Y0.03 F0.5
+ENDRPT
+
+G1 X6.04 F0.5
+;END OF 3RD LAYER. now in top right
+G1 Z$deltaZ F0.5
+
+
+
+;START 4TH LAYER
+Repeat 2; 
+G1 Y-3.04 F0.5
+G1 X-0.03 F0.5
+G1 Y3.04 F0.5
+G1 X-0.03 F0.5
+ENDRPT; -120 microns in x
+
+G1 Y-3.04 F0.5
+G1 X-0.1 F0.5; -220 microns in x
+
+Repeat 4
+G1 Y3.04 F0.5 
+G1 X-0.7 F0.5
+G1 Y-3.04 F0.5
+G1 X-0.7 F0.5
+ENDRPT; -5.82 mm in x
+
+G1 Y3.04 F0.5
+G1 X-0.1 F0.5
+G1 Y-3.04 F0.5; -5.92 mm in x
+
+Repeat 2
+G1 X-0.03 F0.5
+G1 Y3.04 F0.5
+G1 X-0.03 F0.5
+G1 Y-3.04 F0.5
+ENDRPT; -6.04 mm in x
+;END OF 4TH LAYER. Now in bottom left
+G1 Z$deltaZ F0.5
+
+
+
+;Start 5TH LAYER
+Repeat 2; X scanning, start from top right and move left
+G1 X6.04 F0.5
+G1 Y0.03 F0.5
+G1 X-6.04 F0.5
+G1 Y0.03 F0.5
+ENDRPT; 120 microns in y
+
+Repeat 2; -0.7 mm step size in y, so -1.4/cycle = 2.8 mm
+G1 X6.04 F0.5
+G1 Y0.7 F0.5
+G1 X-6.04 F0.5
+G1 Y0.7 F0.5
+ENDRPT; 2.92 microns in y
+
+Repeat 2; X scanning, start from top right and move left
+G1 X6.04 F0.5
+G1 Y0.03 F0.5
+G1 X-6.04 F0.5
+G1 Y0.03 F0.5
+ENDRPT
+
+G1 X6.04 F0.5
+;END OF 5TH LAYER. Now in top right
+G1 Z$deltaZ F0.5
+
+
+
+;Start 6th layer
+Repeat 2; 
+G1 Y-3.04 F0.5
+G1 X-0.03 F0.5
+G1 Y3.04 F0.5
+G1 X-0.03 F0.5
+ENDRPT; -120 microns in x
+
+G1 Y-3.04 F0.5
+G1 X-0.1 F0.5; -220 microns in x
+
+Repeat 4
+G1 Y3.04 F0.5 
+G1 X-0.7 F0.5
+G1 Y-3.04 F0.5
+G1 X-0.7 F0.5
+ENDRPT; -5.82 mm in x
+
+G1 Y3.04 F0.5
+G1 X-0.1 F0.5
+G1 Y-3.04 F0.5; -5.92 mm in x
+
+Repeat 2
+G1 X-0.03 F0.5
+G1 Y3.04 F0.5
+G1 X-0.03 F0.5
+G1 Y-3.04 F0.5
+ENDRPT; -6.04 mm in x
+;END OF 6TH LAYER. Now in bottom left
+G1 Z$deltaZ F0.5
+
+
+
+;Start 7th layer
+Repeat 2; X scanning, start from top right and move left
+G1 X6.04 F0.5
+G1 Y0.03 F0.5
+G1 X-6.04 F0.5
+G1 Y0.03 F0.5
+ENDRPT; 120 microns in y
+
+Repeat 2; -0.7 mm step size in y, so -1.4/cycle = 2.8 mm
+G1 X6.04 F0.5
+G1 Y0.7 F0.5
+G1 X-6.04 F0.5
+G1 Y0.7 F0.5
+ENDRPT; 2.92 microns in y
+
+Repeat 2; X scanning, start from top right and move left
+G1 X6.04 F0.5
+G1 Y0.03 F0.5
+G1 X-6.04 F0.5
+G1 Y0.03 F0.5
+ENDRPT
+
+G1 X6.04 F0.5
+;END OF 7TH LAYER
+
+
+
+G1 X 1 F0.5
+G1 Z-$deltaZbig F0.5; return to layer 1 height
+G1 Y1 F0.5; position for next iteration
+G1 X-15
+G1 Y1.0 F0.5
+ENDRPT; start the next electrode OR end
+;toggle pressure here but need to figure out the command
+M2
+ 

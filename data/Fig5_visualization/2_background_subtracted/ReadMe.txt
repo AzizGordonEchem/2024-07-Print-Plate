@@ -1,0 +1,1 @@
+The fluorescence images of Figure 5a and supplementary video ___ were prepared by trimming the histogram of 1p2V_minus_OCV at gray values -10 (lower bound) and 28 (upper bound), applying the "Green" lookup table, then converting to 8-bit RGB. For Z-depth, the first slice in the stack is taken as Z = 0; each Z-step is 2 microns
